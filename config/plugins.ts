@@ -8,13 +8,6 @@ export default {
   // graphql should be the last
   graphql: {
     config: {
-      generateArtifacts: true,
-      artifacts: {
-        schema:
-          "C:/Users/ACER/Desktop/Jan/next13-masters-strapi/gql/graphql_schema.graphql",
-        typegen:
-          "C:/Users/ACER/Desktop/Jan/next13-masters-strapi/gql/graphql_types.d.ts",
-      },
       endpoint: "/graphql",
       shadowCRUD: true,
       playgroundAlways: false,
