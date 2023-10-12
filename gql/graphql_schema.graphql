@@ -27,6 +27,94 @@ input BooleanFilterInput {
   startsWith: Boolean
 }
 
+type Cart {
+  cart_items(filters: CartItemFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CartItemRelationResponseCollection
+  createdAt: DateTime
+  publishedAt: DateTime
+  updatedAt: DateTime
+}
+
+type CartEntity {
+  attributes: Cart
+  id: ID
+}
+
+type CartEntityResponse {
+  data: CartEntity
+}
+
+type CartEntityResponseCollection {
+  data: [CartEntity!]!
+  meta: ResponseCollectionMeta!
+}
+
+input CartFiltersInput {
+  and: [CartFiltersInput]
+  cart_items: CartItemFiltersInput
+  createdAt: DateTimeFilterInput
+  id: IDFilterInput
+  not: CartFiltersInput
+  or: [CartFiltersInput]
+  publishedAt: DateTimeFilterInput
+  updatedAt: DateTimeFilterInput
+}
+
+input CartInput {
+  cart_items: [ID]
+  publishedAt: DateTime
+}
+
+type CartItem {
+  cart: CartEntityResponse
+  createdAt: DateTime
+  product: ProductEntityResponse
+  publishedAt: DateTime
+  quantity: Int
+  updatedAt: DateTime
+}
+
+type CartItemEntity {
+  attributes: CartItem
+  id: ID
+}
+
+type CartItemEntityResponse {
+  data: CartItemEntity
+}
+
+type CartItemEntityResponseCollection {
+  data: [CartItemEntity!]!
+  meta: ResponseCollectionMeta!
+}
+
+input CartItemFiltersInput {
+  and: [CartItemFiltersInput]
+  cart: CartFiltersInput
+  createdAt: DateTimeFilterInput
+  id: IDFilterInput
+  not: CartItemFiltersInput
+  or: [CartItemFiltersInput]
+  product: ProductFiltersInput
+  publishedAt: DateTimeFilterInput
+  quantity: IntFilterInput
+  updatedAt: DateTimeFilterInput
+}
+
+input CartItemInput {
+  cart: ID
+  product: ID
+  publishedAt: DateTime
+  quantity: Int
+}
+
+type CartItemRelationResponseCollection {
+  data: [CartItemEntity!]!
+}
+
+type CartRelationResponseCollection {
+  data: [CartEntity!]!
+}
+
 type Category {
   createdAt: DateTime
   description: String!
@@ -119,6 +207,62 @@ input CollectionInput {
 
 type CollectionRelationResponseCollection {
   data: [CollectionEntity!]!
+}
+
+type Comment {
+  content: String!
+  createdAt: DateTime
+  email: String!
+  headline: String!
+  name: String!
+  product: ProductEntityResponse
+  publishedAt: DateTime
+  rating: Int!
+  updatedAt: DateTime
+}
+
+type CommentEntity {
+  attributes: Comment
+  id: ID
+}
+
+type CommentEntityResponse {
+  data: CommentEntity
+}
+
+type CommentEntityResponseCollection {
+  data: [CommentEntity!]!
+  meta: ResponseCollectionMeta!
+}
+
+input CommentFiltersInput {
+  and: [CommentFiltersInput]
+  content: StringFilterInput
+  createdAt: DateTimeFilterInput
+  email: StringFilterInput
+  headline: StringFilterInput
+  id: IDFilterInput
+  name: StringFilterInput
+  not: CommentFiltersInput
+  or: [CommentFiltersInput]
+  product: ProductFiltersInput
+  publishedAt: DateTimeFilterInput
+  rating: IntFilterInput
+  updatedAt: DateTimeFilterInput
+}
+
+input CommentInput {
+  content: String
+  email: String
+  headline: String
+  name: String
+  product: ID
+  publishedAt: DateTime
+  rating: Int
+}
+
+type CommentRelationResponseCollection {
+  data: [CommentEntity!]!
 }
 
 """
@@ -217,7 +361,7 @@ input FloatFilterInput {
   startsWith: Float
 }
 
-union GenericMorph = Category | Collection | I18NLocale | Product | UploadFile | UploadFolder | UsersPermissionsPermission | UsersPermissionsRole | UsersPermissionsUser
+union GenericMorph = Cart | CartItem | Category | Collection | Comment | I18NLocale | Product | UploadFile | UploadFolder | UsersPermissionsPermission | UsersPermissionsRole | UsersPermissionsUser
 
 type I18NLocale {
   code: String
@@ -376,8 +520,11 @@ input LongFilterInput {
 type Mutation {
   """Change user password. Confirm with the current password."""
   changePassword(currentPassword: String!, password: String!, passwordConfirmation: String!): UsersPermissionsLoginPayload
+  createCart(data: CartInput!): CartEntityResponse
+  createCartItem(data: CartItemInput!): CartItemEntityResponse
   createCategory(data: CategoryInput!): CategoryEntityResponse
   createCollection(data: CollectionInput!): CollectionEntityResponse
+  createComment(data: CommentInput!): CommentEntityResponse
   createProduct(data: ProductInput!): ProductEntityResponse
   createUploadFile(data: UploadFileInput!): UploadFileEntityResponse
   createUploadFolder(data: UploadFolderInput!): UploadFolderEntityResponse
@@ -387,8 +534,11 @@ type Mutation {
 
   """Create a new user"""
   createUsersPermissionsUser(data: UsersPermissionsUserInput!): UsersPermissionsUserEntityResponse!
+  deleteCart(id: ID!): CartEntityResponse
+  deleteCartItem(id: ID!): CartItemEntityResponse
   deleteCategory(id: ID!): CategoryEntityResponse
   deleteCollection(id: ID!): CollectionEntityResponse
+  deleteComment(id: ID!): CommentEntityResponse
   deleteProduct(id: ID!): ProductEntityResponse
   deleteUploadFile(id: ID!): UploadFileEntityResponse
   deleteUploadFolder(id: ID!): UploadFolderEntityResponse
@@ -415,8 +565,11 @@ type Mutation {
   Reset user password. Confirm with a code (resetToken from forgotPassword)
   """
   resetPassword(code: String!, password: String!, passwordConfirmation: String!): UsersPermissionsLoginPayload
+  updateCart(data: CartInput!, id: ID!): CartEntityResponse
+  updateCartItem(data: CartItemInput!, id: ID!): CartItemEntityResponse
   updateCategory(data: CategoryInput!, id: ID!): CategoryEntityResponse
   updateCollection(data: CollectionInput!, id: ID!): CollectionEntityResponse
+  updateComment(data: CommentInput!, id: ID!): CommentEntityResponse
   updateFileInfo(id: ID!, info: FileInfoInput): UploadFileEntityResponse!
   updateProduct(data: ProductInput!, id: ID!): ProductEntityResponse
   updateUploadFile(data: UploadFileInput!, id: ID!): UploadFileEntityResponse
@@ -445,14 +598,18 @@ input PaginationArg {
 }
 
 type Product {
+  avgRating: Int
+  cart_items(filters: CartItemFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CartItemRelationResponseCollection
   categories(filters: CategoryFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CategoryRelationResponseCollection
   collections(filters: CollectionFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CollectionRelationResponseCollection
+  comments(filters: CommentFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CommentRelationResponseCollection
   createdAt: DateTime
   description: String!
   images(filters: UploadFileFiltersInput, pagination: PaginationArg = {}, sort: [String] = []): UploadFileRelationResponseCollection!
   name: String!
   price: Int!
   publishedAt: DateTime
+  ratingCount: Int
   slug: String!
   updatedAt: DateTime
 }
@@ -473,8 +630,11 @@ type ProductEntityResponseCollection {
 
 input ProductFiltersInput {
   and: [ProductFiltersInput]
+  avgRating: IntFilterInput
+  cart_items: CartItemFiltersInput
   categories: CategoryFiltersInput
   collections: CollectionFiltersInput
+  comments: CommentFiltersInput
   createdAt: DateTimeFilterInput
   description: StringFilterInput
   id: IDFilterInput
@@ -483,18 +643,23 @@ input ProductFiltersInput {
   or: [ProductFiltersInput]
   price: IntFilterInput
   publishedAt: DateTimeFilterInput
+  ratingCount: IntFilterInput
   slug: StringFilterInput
   updatedAt: DateTimeFilterInput
 }
 
 input ProductInput {
+  avgRating: Int
+  cart_items: [ID]
   categories: [ID]
   collections: [ID]
+  comments: [ID]
   description: String
   images: [ID]
   name: String
   price: Int
   publishedAt: DateTime
+  ratingCount: Int
   slug: String
 }
 
@@ -508,10 +673,16 @@ enum PublicationState {
 }
 
 type Query {
+  cart(id: ID): CartEntityResponse
+  cartItem(id: ID): CartItemEntityResponse
+  cartItems(filters: CartItemFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CartItemEntityResponseCollection
+  carts(filters: CartFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CartEntityResponseCollection
   categories(filters: CategoryFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CategoryEntityResponseCollection
   category(id: ID): CategoryEntityResponse
   collection(id: ID): CollectionEntityResponse
   collections(filters: CollectionFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CollectionEntityResponseCollection
+  comment(id: ID): CommentEntityResponse
+  comments(filters: CommentFiltersInput, pagination: PaginationArg = {}, publicationState: PublicationState = LIVE, sort: [String] = []): CommentEntityResponseCollection
   i18NLocale(id: ID): I18NLocaleEntityResponse
   i18NLocales(filters: I18NLocaleFiltersInput, pagination: PaginationArg = {}, sort: [String] = []): I18NLocaleEntityResponseCollection
   me: UsersPermissionsMe

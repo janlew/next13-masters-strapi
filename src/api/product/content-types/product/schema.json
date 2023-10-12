@@ -49,6 +49,24 @@
       "type": "uid",
       "targetField": "name",
       "required": true
+    },
+    "cart_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::cart-item.cart-item",
+      "mappedBy": "product"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "product"
+    },
+    "avgRating": {
+      "type": "integer"
+    },
+    "ratingCount": {
+      "type": "integer"
     }
   }
 }
