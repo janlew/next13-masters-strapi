@@ -1,16 +1,6 @@
 export default [
   "strapi::errors",
-  {
-    name: "strapi::security",
-    config: {
-      contentSecurityPolicy: {
-        directives: {
-          "script-src": ["'self'", "'unsafe-inline'"],
-          "img-src": ["'self'", "data:"],
-        },
-      },
-    },
-  },
+  "strapi::security",
   "strapi::cors",
   "strapi::poweredBy",
   "strapi::logger",
